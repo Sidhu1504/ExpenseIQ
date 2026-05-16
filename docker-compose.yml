@@ -1,0 +1,56 @@
+services:
+  web:
+    build: 
+      context: ./frontend
+    container_name: expense_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://3.144.165.94:3001/api
+    depends_on:
+      - api
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+
+  api:
+    build: 
+      context: ./backend
+    container_name: expense_backend
+    ports:
+      - "3001:3000" # Changed host port to 3001 to avoid conflict with Next.js
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - DATABASE_URL=postgres://admin:supersecret@postgres_db:5432/expense_db
+      - JWT_SECRET=dev_jwt_secret_key_change_in_production
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
+
+  postgres_db:
+    image: postgres:18-alpine 
+    container_name: expense_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: supersecret
+      POSTGRES_DB: expense_db
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d expense_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
