@@ -199,3 +199,77 @@ exports.getAuditLogs = async (req, res) => {
     }
 };
 
+// 11. MULTI-TENANT: SHARE WALLET ENGINE
+exports.shareWallet = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        // 1. Check if the invited user exists on ExpenseIQ
+        const friend = await db.query('SELECT id, name FROM users WHERE email = $1', [email]);
+        if (friend.rows.length === 0) return res.status(404).json({ error: "User not found on ExpenseIQ. Have them register first." });
+
+        // 2. Find your primary wallet
+        const myWallet = await db.query('SELECT id FROM wallets WHERE owner_id = $1 LIMIT 1', [req.user.id]);
+        if (myWallet.rows.length === 0) return res.status(404).json({ error: "Primary wallet missing." });
+
+        // 3. Bind the friend to your wallet in the wallet_members junction table
+        await db.query(
+            `INSERT INTO wallet_members (wallet_id, user_id, permissions) VALUES ($1, $2, 'editor') ON CONFLICT DO NOTHING`,
+            [myWallet.rows[0].id, friend.rows[0].id]
+        );
+
+        // 4. Update wallet status
+        await db.query('UPDATE wallets SET is_shared = TRUE WHERE id = $1', [myWallet.rows[0].id]);
+
+        // Log to security audit
+        await db.query(`INSERT INTO audit_logs (user_id, action) VALUES ($1, $2)`, [req.user.id, `Shared wallet access with ${email}`]);
+
+        res.status(200).json({ message: `Success! ${friend.rows[0].name} now has multi-tenant access to your ledger.` });
+    } catch (error) {
+        console.error("Share Wallet Error:", error);
+        res.status(500).json({ error: "Failed to establish multi-tenant connection." });
+    }
+};
+
+const { authenticator } = require('otplib');
+const qrcode = require('qrcode');
+
+// 12. 2FA: Generate Google Authenticator QR Code
+exports.generate2FA = async (req, res) => {
+    try {
+        const user = await db.query('SELECT email FROM users WHERE id = $1', [req.user.id]);
+        const secret = authenticator.generateSecret();
+        // Create the URI that the Google Authenticator app scans
+        const otpauth = authenticator.keyuri(user.rows[0].email, 'ExpenseIQ-Enterprise', secret);
+
+        // Generate a visual QR Code Image
+        const qrCodeUrl = await qrcode.toDataURL(otpauth);
+
+        // Save the secret temporarily to the user's database row
+        await db.query('UPDATE users SET two_factor_secret = $1 WHERE id = $2', [secret, req.user.id]);
+
+        res.status(200).json({ qrCodeUrl, secret });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to generate 2FA cipher." });
+    }
+};
+
+// 13. 2FA: Verify the Code
+exports.verify2FA = async (req, res) => {
+    try {
+        const { token } = req.body;
+        const user = await db.query('SELECT two_factor_secret FROM users WHERE id = $1', [req.user.id]);
+
+        // Check if the 6-digit code matches the secret
+        const isValid = authenticator.check(token, user.rows[0].two_factor_secret);
+
+        if (isValid) {
+            await db.query(`INSERT INTO audit_logs (user_id, action) VALUES ($1, '2FA Successfully Activated')`, [req.user.id]);
+            res.status(200).json({ message: "2FA Verified and Locked." });
+        } else {
+            res.status(400).json({ error: "Invalid 6-digit code." });
+        }
+    } catch (error) {
+        res.status(500).json({ error: "2FA Verification failed." });
+    }
+};

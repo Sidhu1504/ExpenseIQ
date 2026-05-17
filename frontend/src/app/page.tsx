@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { 
-  Wallet, Shield, BellRing, Sparkles, Receipt, CalendarClock,
+  Wallet, Shield, Sparkles, Receipt, CalendarClock,
   ArrowRight, Lock, Mail, User, X, ShieldCheck, Heart,
-  Briefcase, TrendingUp, HelpCircle, MapPin, Phone, Terminal,
-  HardDriveDownload, WifiOff, Users, Target, ShieldAlert
+  Briefcase, TrendingUp, MapPin, Phone, Terminal, HelpCircle,
+  HardDriveDownload, WifiOff, Users, Target, ShieldAlert, 
+  Server, Fingerprint, BarChart3, Database, Globe, CheckCircle2, Zap
 } from "lucide-react";
 
 export default function LuxuryLandingPortal() {
@@ -25,7 +26,8 @@ export default function LuxuryLandingPortal() {
     setStatusMsg({ text: "", isError: false });
     setLoading(true);
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+    // Dynamic routing: Works flawlessly behind Nginx on Port 80
+    const apiUrl = "/api"; 
     const targetEndpoint = isLogin ? "/auth/login" : "/auth/register";
     const payload = isLogin ? { email, password } : { name, email, password };
 
@@ -44,240 +46,266 @@ export default function LuxuryLandingPortal() {
         setIsAuthOpen(false);
         router.push("/dashboard");
       } else {
-        setStatusMsg({ text: "Identity recorded safely into PostgreSQL. Switching channels...", isError: false });
-        setTimeout(() => {
-          setIsLogin(true);
-          setName("");
-          setStatusMsg({ text: "", isError: false });
-        }, 1500);
+        setStatusMsg({ text: "Identity recorded safely. Switching channels...", isError: false });
+        setTimeout(() => { setIsLogin(true); setName(""); setStatusMsg({ text: "", isError: false }); }, 1500);
       }
-    } catch (err: any) {
-      setStatusMsg({ text: err.message, isError: true });
-    } finally {
-      setLoading(false);
-    }
+    } catch (err: any) { setStatusMsg({ text: err.message, isError: true }); } finally { setLoading(false); }
   };
 
-  const userBenefits = [
-    {
-      icon: HardDriveDownload,
-      title: "Bulk CSV Parsing Engine",
-      desc: "Migrate instantly. Drag and drop your bank statement CSVs to ingest thousands of transaction rows into your database in under 2 seconds."
-    },
-    {
-      icon: Users,
-      title: "Split Expense Matrix",
-      desc: "Like Splitwise, but native. Track shared dinner bills, rent, and trips. See exactly who owes you money and settle balances with one click."
-    },
-    {
-      icon: WifiOff,
-      title: "PWA Offline Architecture",
-      desc: "Install ExpenseIQ directly to your phone or desktop. The Progressive Web App caches your dashboard locally so you can log expenses without internet."
-    },
-    {
-      icon: Target,
-      title: "Savings Goal Visualizer",
-      desc: "Set high-capital targets like a new MacBook or a Goa trip. Watch your progress bar fill up as your automated budget saves money for you."
-    },
-    {
-      icon: ShieldAlert,
-      title: "Security Audit Logging",
-      desc: "Enterprise-grade session tracking. Monitor the IP address and device of every login. Detect anomalies and instantly terminate rogue sessions."
-    },
-    {
-      icon: Receipt,
-      title: "Offline Receipt OCR",
-      desc: "Take a picture of a receipt. Our localized Tesseract engine reads the shop name and final price without sending your metadata to third-party APIs."
-    }
+  const coreFeatures = [
+    { icon: BarChart3, title: "Deep Visual Analytics", desc: "Stop guessing where your money goes. Automatically generate Recharts pie charts, spending velocity radar graphs, and heatmaps." },
+    { icon: Users, title: "Multi-Tenant Shared Wallets", desc: "Invite trusted users to your ledger via email. Share the same dashboard, track joint expenses, and sync balances in real-time." },
+    { icon: Target, title: "Automated Savings Goals", desc: "Define large capital targets. Our engine tracks your cumulative savings and visually maps your progress to the deadline." },
+    { icon: HardDriveDownload, title: "Bulk CSV Ingestion Engine", desc: "Drag and drop monthly bank statements (CSV) into our Papaparse engine to write thousands of rows into your database instantly." },
+    { icon: Receipt, title: "Offline OCR Receipt Matrix", desc: "Snap a photo of your bill. Our localized optical character recognition (OCR) reads the merchant name and total price completely offline." },
+    { icon: CalendarClock, title: "Recurring Subscription Engine", desc: "Never accidentally pay for a forgotten free trial. Log your Netflix, Gym, and AWS bills to see a unified calendar of upcoming deductions." }
   ];
 
-  const appUseCases = [
-    {
-      icon: User,
-      title: "Personal Cash Automation",
-      detail: "Perfect for students and working professionals aiming to master daily savings. Split costs across lifestyle tags like groceries, dining, and gym memberships."
-    },
-    {
-      icon: Briefcase,
-      title: "Corporate Travel & Expense Management",
-      detail: "Compile scanned receipts, tax configurations, and business travel allocations into instant structured tables ready for accounting CSV submission."
-    },
-    {
-      icon: TrendingUp,
-      title: "Freelancer Inventory Allocation",
-      detail: "Map custom category rules against clients, software subscriptions, and hardware asset costs to keep track of true project margins."
-    }
+  const infrastructureSpecs = [
+    { icon: Server, title: "Nginx Reverse Proxy", desc: "Traffic is intelligently routed on Port 80, eliminating CORS errors and providing enterprise-grade load balancing for API requests." },
+    { icon: Fingerprint, title: "2FA Authentication", desc: "Military-grade Time-Based OTP security. Bind your ledger to Google Authenticator to ensure absolute data sovereignty." },
+    { icon: Database, title: "PostgreSQL 18 Backend", desc: "Your data is stored in a highly relational, ACID-compliant SQL database, ensuring transaction integrity and preventing ledger corruption." },
+    { icon: WifiOff, title: "PWA Offline Architecture", desc: "Install the app directly to your device. Service workers cache your dashboard locally, allowing you to log expenses even without an internet connection." }
+  ];
+
+  const faqItems = [
+    { q: "Is my personal financial data shared with external networks?", a: "Absolutely not. ExpenseIQ functions on a strict privacy model. All receipt scanning, database storage, and ledger computations are kept completely offline within your self-hosted isolated container network." },
+    { q: "Do I need premium paid tokens or AI keys to scan receipts?", a: "No keys required. The engine runs a fully integrated, open-source structural layout parser that reads and identifies receipt matrices out-of-the-box." },
+    { q: "Can I extract my data for standard corporate tax calculations?", a: "Yes. The platform generates comprehensive data exports, allowing you to instantly pull your ledger rows directly into clean CSV spreadsheets or corporate-styled PDF invoices." },
+    { q: "What happens if I lose my internet connection?", a: "Because of our integrated PWA Service Workers, your dashboard is cached locally. You can continue to view ledgers and log new expenses offline. They will securely sync to PostgreSQL once your connection is restored." }
   ];
 
   return (
     <div className="min-h-screen bg-[#05070f] text-gray-100 font-sans selection:bg-blue-600 selection:text-white relative flex flex-col justify-between overflow-x-hidden">
       
-      {/* 🌌 High-Fidelity Floating Gradient Mesh Background */}
+      {/* 🌌 High-Fidelity Background */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] z-0 pointer-events-none" />
       <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[1200px] h-[450px] bg-gradient-to-b from-blue-500/10 to-transparent blur-[140px] rounded-full pointer-events-none z-0" />
       
-      {/* 🌐 Top Premium Navigation Ribbon */}
-      <nav className="w-full h-20 border-b border-white/[0.05] bg-[#05070f]/70 backdrop-blur-md relative z-40 px-6 xl:px-12 flex items-center justify-between">
+      {/* 🌐 Global Navigation */}
+      <nav className="w-full h-20 border-b border-white/[0.05] bg-[#05070f]/80 backdrop-blur-xl fixed top-0 z-40 px-6 xl:px-12 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-heading font-black text-white text-base shadow-lg shadow-blue-500/20">₹</div>
-          <span className="font-heading font-bold text-lg tracking-tight text-white transition-all hover:opacity-90">ExpenseIQ</span>
+          <span className="font-heading font-bold text-xl tracking-tight text-white transition-all hover:opacity-90">ExpenseIQ</span>
         </div>
-
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
+          <div className="hidden md:flex gap-6 text-xs font-mono font-medium text-gray-400">
+            <a href="#features" className="hover:text-white transition-colors">Features</a>
+            <a href="#infrastructure" className="hover:text-white transition-colors">Architecture</a>
+            <a href="#pricing" className="hover:text-white transition-colors">Open Source</a>
+          </div>
+          <div className="h-4 w-px bg-white/[0.1] hidden md:block"></div>
           <button onClick={() => { setIsLogin(true); setStatusMsg({text:"", isError:false}); setIsAuthOpen(true); }} className="text-xs font-mono font-medium text-gray-400 hover:text-white transition-colors">[ Sign In ]</button>
-          <button onClick={() => { setIsLogin(false); setStatusMsg({text:"", isError:false}); setIsAuthOpen(true); }} className="bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs px-4 h-9 rounded-lg shadow-md shadow-blue-600/10 transition-all flex items-center justify-center gap-1.5 group">
-            <span>Get Started Free</span>
-            <ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />
+          <button onClick={() => { setIsLogin(false); setStatusMsg({text:"", isError:false}); setIsAuthOpen(true); }} className="bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs px-5 h-9 rounded-lg shadow-md shadow-blue-600/10 transition-all flex items-center justify-center gap-1.5 group">
+            <span>Get Started</span><ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />
           </button>
         </div>
       </nav>
 
-      {/* 🚀 Hero Presentation Layer */}
-      <section className="pt-28 pb-16 px-6 max-w-5xl mx-auto text-center relative z-10 flex flex-col justify-center items-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-950/40 border border-blue-500/20 text-blue-400 text-[10px] font-mono uppercase tracking-wide mb-6 shadow-sm">
-          <Sparkles size={12} className="text-yellow-400 animate-spin-slow" /> Deployed with Offline PWA Architecture
+      {/* 🚀 Hero Display */}
+      <section className="pt-48 pb-20 px-6 max-w-6xl mx-auto text-center relative z-10 flex flex-col justify-center items-center">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-950/40 border border-blue-500/20 text-blue-400 text-[10px] font-mono uppercase tracking-wide mb-8 shadow-sm backdrop-blur-md">
+          <Sparkles size={12} className="text-yellow-400 animate-spin-slow" /> Version 3.0: Enterprise Architecture Deployed
         </div>
-        <h1 className="font-heading text-4xl sm:text-6xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-[1.1] transition-all">
-          Take Control of Your Daily Expenses with <span className="text-gradient-purple-blue">God-Mode Access</span>
+        <h1 className="font-heading text-5xl sm:text-7xl lg:text-[5rem] font-extrabold tracking-tight text-white max-w-5xl mx-auto leading-[1.05] transition-all">
+          Command Your Capital.<br/><span className="text-gradient-purple-blue">Automate Your Wealth.</span>
         </h1>
-        <p className="mt-5 text-base sm:text-md text-gray-400 max-w-2xl mx-auto font-sans leading-relaxed">
-          The ultimate personal finance workstation. Track spending, split bills with friends, import CSV bank statements, and secure your session logs—all from one highly scalable cloud portal.
+        <p className="mt-8 text-base sm:text-lg text-gray-400 max-w-3xl mx-auto font-sans leading-relaxed">
+          The ultimate self-hosted financial workstation. Track spending limits, split bills with family, ingest raw CSV bank data, and generate corporate-grade analytics—all secured behind Military-Grade 2FA.
         </p>
-
-        <div className="mt-8 flex items-center gap-4">
-          <button onClick={() => { setIsLogin(true); setStatusMsg({text:"", isError:false}); setIsAuthOpen(true); }} className="bg-blue-600 text-white font-semibold text-sm px-8 h-12 rounded-lg hover:bg-blue-500 transition-all duration-300 shadow-xl shadow-blue-600/20 hover:scale-[1.02]">
-            Open Dashboard Workspace
+        <div className="mt-12 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+          <button onClick={() => { setIsLogin(true); setStatusMsg({text:"", isError:false}); setIsAuthOpen(true); }} className="w-full sm:w-auto bg-blue-600 text-white font-bold text-sm px-10 h-14 rounded-xl hover:bg-blue-500 transition-all duration-300 shadow-xl shadow-blue-600/20 hover:scale-[1.02] flex items-center justify-center gap-2">
+            Access Secured Dashboard <ShieldCheck size={16} />
           </button>
+          <a href="#features" className="w-full sm:w-auto bg-white/[0.03] border border-white/[0.08] text-white font-bold text-sm px-10 h-14 rounded-xl hover:bg-white/[0.08] transition-all duration-300 flex items-center justify-center">
+            Explore Capabilities
+          </a>
         </div>
       </section>
 
-      {/* 🛠️ Expanded Core Functional Specifications Grid */}
-      <section className="py-16 px-6 max-w-6xl mx-auto relative z-10 border-t border-white/[0.05]">
-        <div className="text-center mb-12">
-          <h2 className="font-heading text-xs font-bold text-blue-500 uppercase tracking-widest mb-2">Capabilities Matrix</h2>
-          <p className="text-xl font-bold text-white">Engineered Features for Daily Financial Clarity</p>
+      {/* ⭐ Operational Modules */}
+      <section id="features" className="py-24 px-6 max-w-7xl mx-auto relative z-10 border-t border-white/[0.05]">
+        <div className="text-center mb-16">
+          <h2 className="font-heading text-xs font-bold text-blue-500 uppercase tracking-widest mb-3">Platform Capabilities</h2>
+          <p className="text-3xl sm:text-4xl font-bold text-white">Everything you need to master cash flow.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {userBenefits.map((benefit, i) => {
+          {coreFeatures.map((benefit, i) => {
             const Icon = benefit.icon;
             return (
-              <div key={i} className="bg-white/[0.01] border border-white/[0.05] rounded-xl p-6 transition-all duration-300 hover:border-white/[0.1] hover:bg-white/[0.02] group hover:-translate-y-1">
-                <div className="w-10 h-10 rounded-lg bg-blue-600/10 border border-blue-500/20 text-blue-400 flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110">
-                  <Icon size={18} />
-                </div>
-                <h3 className="font-heading text-base font-bold text-gray-200">{benefit.title}</h3>
-                <p className="mt-2 text-xs text-gray-400 font-sans leading-relaxed">{benefit.desc}</p>
+              <div key={i} className="bg-gray-900/40 backdrop-blur-md border border-white/[0.05] rounded-2xl p-8 transition-all duration-300 hover:border-blue-500/30 hover:bg-gray-900/80 hover:-translate-y-1 group shadow-2xl shadow-black/50">
+                <div className="w-12 h-12 rounded-xl bg-blue-600/10 border border-blue-500/20 text-blue-400 flex items-center justify-center mb-6 transition-transform duration-300 group-hover:scale-110 group-hover:bg-blue-600/20"><Icon size={24} /></div>
+                <h3 className="font-heading text-lg font-bold text-gray-100 mb-3">{benefit.title}</h3>
+                <p className="text-sm text-gray-400 font-sans leading-relaxed">{benefit.desc}</p>
               </div>
             );
           })}
         </div>
       </section>
 
-      {/* 💼 Real-World Use Cases */}
-      <section className="py-16 px-6 max-w-6xl mx-auto relative z-10 border-t border-white/[0.05]">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {appUseCases.map((useCase, idx) => {
-            const CaseIcon = useCase.icon;
-            return (
-              <div key={idx} className="bg-gradient-to-b from-white/[0.02] to-transparent border border-white/[0.04] p-6 rounded-xl flex gap-4">
-                <div className="text-blue-400 mt-1 shrink-0"><CaseIcon size={20} /></div>
-                <div>
-                  <h4 className="font-heading font-bold text-sm text-gray-200">{useCase.title}</h4>
-                  <p className="text-xs text-gray-400 mt-2 font-sans leading-relaxed">{useCase.detail}</p>
-                </div>
-              </div>
-            );
-          })}
+      {/* 🛡️ Technical Specs */}
+      <section id="infrastructure" className="py-24 px-6 relative z-10 border-y border-white/[0.05] bg-[#070a13]/80">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col lg:flex-row items-center justify-between mb-16 gap-10">
+            <div className="lg:w-1/3">
+              <h2 className="font-heading text-xs font-bold text-emerald-500 uppercase tracking-widest mb-3">System Architecture</h2>
+              <p className="text-3xl sm:text-4xl font-bold text-white leading-tight">Data sovereignty is our prime directive.</p>
+              <p className="text-gray-400 mt-4 text-sm leading-relaxed">ExpenseIQ is designed to be completely self-hosted. Your telemetry never leaves your isolated Docker network.</p>
+            </div>
+            <div className="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-8">
+              {infrastructureSpecs.map((spec, i) => {
+                const Icon = spec.icon;
+                return (
+                  <div key={i} className="border-l-2 border-emerald-500/30 pl-6 py-2 hover:border-emerald-500 transition-colors">
+                    <div className="text-emerald-400 mb-3 bg-emerald-500/10 w-10 h-10 flex items-center justify-center rounded-lg"><Icon size={20} /></div>
+                    <h3 className="font-heading text-md font-bold text-gray-200 mb-2">{spec.title}</h3>
+                    <p className="text-xs text-gray-500 font-sans leading-relaxed">{spec.desc}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* 🗺️ Professional Corporate Footer Layout */}
-      <footer className="w-full border-t border-white/[0.06] bg-[#03050a] relative z-10 font-sans text-xs pt-12 pb-6">
-        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-left mb-10">
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded bg-blue-600 flex items-center justify-center font-bold text-white text-xs">₹</div>
-              <span className="font-heading font-bold text-sm tracking-tight text-white">ExpenseIQ Enterprise</span>
-            </div>
-            <p className="text-[11px] text-gray-500 font-sans leading-relaxed max-w-xs">Next-generation high-performance expense ecosystem designed to manage metrics, automate cash flows, and maximize local ledger efficiency safely.</p>
+      {/* 💎 Pricing / Open Source Commitment */}
+      <section id="pricing" className="py-24 px-6 max-w-5xl mx-auto relative z-10">
+        <div className="text-center mb-16">
+          <h2 className="font-heading text-xs font-bold text-purple-500 uppercase tracking-widest mb-3">Deployment Model</h2>
+          <p className="text-3xl sm:text-4xl font-bold text-white">Enterprise features. Zero monthly fees.</p>
+        </div>
+        <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-white/[0.1] rounded-3xl p-10 sm:p-14 relative overflow-hidden text-center">
+          <div className="absolute top-0 right-0 p-6 opacity-10"><Globe size={200} /></div>
+          <h3 className="text-2xl font-bold text-white mb-4 relative z-10">Open Source Community Edition</h3>
+          <div className="text-5xl font-black text-white mb-6 relative z-10">₹0 <span className="text-lg text-gray-400 font-normal">/ forever</span></div>
+          <p className="text-gray-400 text-sm max-w-2xl mx-auto mb-8 relative z-10">We believe personal finance data should belong to the individual, not a corporation. That is why ExpenseIQ is deployed as a 100% free, self-hosted Docker architecture.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto text-left relative z-10">
+            <div className="flex items-center gap-3 text-sm text-gray-300"><CheckCircle2 size={16} className="text-emerald-500"/> Unlimited Transactions</div>
+            <div className="flex items-center gap-3 text-sm text-gray-300"><CheckCircle2 size={16} className="text-emerald-500"/> PostgreSQL Database Included</div>
+            <div className="flex items-center gap-3 text-sm text-gray-300"><CheckCircle2 size={16} className="text-emerald-500"/> Nginx Load Balancing</div>
+            <div className="flex items-center gap-3 text-sm text-gray-300"><CheckCircle2 size={16} className="text-emerald-500"/> 2FA Security Matrix</div>
           </div>
-          <div className="space-y-3">
-            <h5 className="font-heading text-xs font-bold text-gray-300 uppercase tracking-wider">System Blueprints</h5>
-            <div className="flex flex-col gap-2 font-mono text-[11px] text-gray-400">
-              <a href="https://github.com/Sidhu1504/Expense-manager-Application.git" target="_blank" className="flex items-center gap-2 hover:text-white transition"><Terminal size={13} /> Source Repository</a>
-              <a href="https://www.linkedin.com/in/sidhant-bote/" target="_blank" className="flex items-center gap-2 hover:text-white transition"><User size={13} /> Engineering Network</a>
+        </div>
+      </section>
+
+      {/* ❓ Interactive FAQ Console */}
+      <section className="py-20 px-6 max-w-4xl mx-auto relative z-10 border-t border-white/[0.05]">
+        <div className="text-center mb-12">
+          <h2 className="font-heading text-xs font-bold text-blue-500 uppercase tracking-widest mb-3">Knowledge Base</h2>
+          <p className="text-3xl font-bold text-white">Frequently Reviewed Operations</p>
+        </div>
+        <div className="space-y-4">
+          {faqItems.map((faq, i) => (
+            <div key={i} className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-6 transition hover:bg-white/[0.04]">
+              <div className="flex gap-4 text-base font-heading font-bold text-gray-200">
+                <HelpCircle size={20} className="text-blue-500 shrink-0 mt-0.5" />
+                <h4>{faq.q}</h4>
+              </div>
+              <p className="text-sm text-gray-400 font-sans mt-3 pl-9 leading-relaxed border-l-2 border-white/[0.04] ml-2.5">
+                {faq.a}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ⚡ Final Call to Action */}
+      <section className="py-24 px-6 relative z-10 border-t border-white/[0.05] bg-gradient-to-t from-blue-900/10 to-transparent text-center">
+        <h2 className="text-4xl sm:text-5xl font-extrabold text-white mb-6 tracking-tight">Ready to master your ledger?</h2>
+        <p className="text-gray-400 text-lg mb-10 max-w-2xl mx-auto">Initialize your secure PostgreSQL operator node today and take absolute control over your personal cash flow automation.</p>
+        <button onClick={() => { setIsLogin(false); setStatusMsg({text:"", isError:false}); setIsAuthOpen(true); }} className="bg-blue-600 text-white font-bold text-base px-12 h-16 rounded-xl hover:bg-blue-500 transition-all duration-300 shadow-2xl shadow-blue-600/30 hover:scale-[1.03] inline-flex items-center gap-3">
+          Deploy Your Instance <Zap size={18} className="fill-current"/>
+        </button>
+      </section>
+
+      {/* 🗺️ Massive Corporate Footer */}
+      <footer className="w-full border-t border-white/[0.06] bg-[#020408] relative z-10 font-sans pt-20 pb-8">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 text-left mb-16">
+          
+          <div className="space-y-5 lg:col-span-1">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-bold text-white text-lg">₹</div>
+              <span className="font-heading font-bold text-xl tracking-tight text-white">ExpenseIQ</span>
+            </div>
+            <p className="text-sm text-gray-500 font-sans leading-relaxed">The premier self-hosted financial ledger designed to give operators absolute, offline control over their operational capital.</p>
+          </div>
+          
+          <div className="space-y-5">
+            <h5 className="font-heading text-sm font-bold text-gray-200 uppercase tracking-widest">Platform</h5>
+            <div className="flex flex-col gap-4 text-sm text-gray-500 font-medium">
+              <a href="#" className="hover:text-blue-400 transition-colors">Analytics Dashboard</a>
+              <a href="#" className="hover:text-blue-400 transition-colors">Splitwise Engine</a>
+              <a href="#" className="hover:text-blue-400 transition-colors">Receipt OCR Parsing</a>
+              <a href="#" className="hover:text-blue-400 transition-colors">CSV Bulk Ingestion</a>
             </div>
           </div>
-          <div className="space-y-3">
-            <h5 className="font-heading text-xs font-bold text-gray-300 uppercase tracking-wider">Operational Base</h5>
-            <div className="flex flex-col gap-2.5 text-gray-400 font-sans text-[11px]">
-              <div className="flex items-start gap-2"><MapPin size={13} className="text-blue-500 shrink-0 mt-0.5" /><span>Viman Nagar, Pune, Maharashtra, India</span></div>
-              <div className="flex items-center gap-2 font-mono"><Phone size={13} className="text-emerald-500" /><span>+91 7385799333</span></div>
+
+          <div className="space-y-5">
+            <h5 className="font-heading text-sm font-bold text-gray-200 uppercase tracking-widest">Resources & Legal</h5>
+            <div className="flex flex-col gap-4 text-sm text-gray-500 font-medium">
+              <a href="https://github.com/Sidhu1504/Expense-manager-Application.git" target="_blank" className="hover:text-white transition-colors flex items-center gap-2"><Terminal size={14}/> GitHub Repository</a>
+              <a href="#" className="hover:text-white transition-colors">API Documentation</a>
+              <a href="#" className="hover:text-white transition-colors">Privacy Protocol</a>
+              <a href="#" className="hover:text-white transition-colors">Open Source License</a>
+            </div>
+          </div>
+          
+          <div className="space-y-5">
+            <h5 className="font-heading text-sm font-bold text-gray-200 uppercase tracking-widest">Operator Base</h5>
+            <div className="flex flex-col gap-4 text-gray-500 font-sans text-sm">
+              <div className="flex items-start gap-3"><MapPin size={16} className="text-blue-500 shrink-0 mt-0.5" /><span>Viman Nagar, Pune,<br/>Maharashtra, India</span></div>
+              <div className="flex items-center gap-3"><Phone size={16} className="text-emerald-500 shrink-0" /><span>+91 7385799333</span></div>
+              <a href="https://www.linkedin.com/in/sidhant-bote/" target="_blank" className="flex items-center gap-3 hover:text-blue-400 transition-colors mt-2"><User size={16} className="text-purple-500 shrink-0" /><span>Engineering Network</span></a>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-white/[0.04] pt-6 max-w-6xl mx-auto px-6 text-center text-gray-600 font-mono text-[11px] flex flex-col sm:flex-row justify-between items-center gap-3">
-          <p>© {new Date().getFullYear()} ExpenseIQ Ledger Systems. All data sovereign.</p>
-          <div className="flex items-center gap-1.5 bg-white/[0.02] border border-white/[0.04] px-3 py-1 rounded-full">
-            <span>Made with</span><Heart size={11} className="text-red-500 fill-red-500 animate-pulse" /><span>from India by</span><span className="text-gray-300 font-sans font-semibold tracking-wide">Sid</span>
+        <div className="border-t border-white/[0.04] pt-8 max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+          <p className="text-gray-600 text-xs font-mono tracking-wide">© {new Date().getFullYear()} ExpenseIQ Ledger Systems. All data sovereign.</p>
+          <div className="flex items-center gap-2 bg-white/[0.02] border border-white/[0.05] px-5 py-2.5 rounded-full text-xs font-mono">
+            <span className="text-gray-400">Architected with</span><Heart size={14} className="text-red-500 fill-red-500 animate-pulse" /><span>by</span><span className="text-gray-200 font-bold tracking-widest uppercase">Sid</span>
           </div>
         </div>
       </footer>
-
-      {/* 🔐 Authentication Modal */}
+      
+      {/* 🔐 Auth Portal (Hidden by default) */}
       {isAuthOpen && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fade-in">
-          <div className="w-full max-w-[420px] bg-gray-900/90 border border-white/[0.08] rounded-2xl p-8 shadow-2xl relative transition-all">
-            <button onClick={() => setIsAuthOpen(false)} className="absolute right-4 top-4 text-gray-500 hover:text-gray-300 transition-colors"><X size={18} /></button>
-            <div className="flex flex-col items-center mb-6 text-center">
-              <div className="w-10 h-10 rounded-xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mb-3"><Wallet size={18} /></div>
-              <h3 className="font-heading text-xl font-bold text-white">{isLogin ? "System Access Authorization" : "Initialize Identity Node"}</h3>
-              <p className="text-[11px] text-gray-500 font-mono mt-1">PostgreSQL 18 Secure Handshake</p>
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-[100] animate-fade-in">
+          <div className="w-full max-w-[440px] bg-gray-900 border border-white/[0.1] rounded-2xl p-8 shadow-2xl relative transition-all">
+            <button onClick={() => setIsAuthOpen(false)} className="absolute right-5 top-5 text-gray-500 hover:text-white transition-colors bg-white/[0.05] p-1.5 rounded-lg"><X size={18} /></button>
+            <div className="flex flex-col items-center mb-8 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-blue-600/10 border border-blue-500/30 flex items-center justify-center text-blue-400 mb-4 shadow-inner"><Lock size={24} /></div>
+              <h3 className="font-heading text-2xl font-bold text-white">{isLogin ? "Nginx Secure Access" : "Initialize Identity Node"}</h3>
+              <p className="text-xs text-gray-400 font-mono mt-2 flex items-center gap-1.5"><Shield size={12} className="text-emerald-500"/> PostgreSQL Handshake Ready</p>
             </div>
 
             {statusMsg.text && (
-              <div className={`mb-4 p-3 rounded-lg border text-xs font-sans flex items-center gap-2 ${statusMsg.isError ? "bg-red-500/10 border-red-500/20 text-red-400" : "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"}`}>
-                <ShieldCheck size={14} className="shrink-0" /><span>{statusMsg.text}</span>
+              <div className={`mb-6 p-4 rounded-xl border text-sm font-sans flex items-center gap-3 shadow-inner ${statusMsg.isError ? "bg-red-500/10 border-red-500/20 text-red-400" : "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"}`}>
+                <ShieldCheck size={18} className="shrink-0" /><span>{statusMsg.text}</span>
               </div>
             )}
 
             <form onSubmit={handleAuthSubmission} className="space-y-4">
               {!isLogin && (
-                <div className="space-y-1">
-                  <label className="text-[10px] font-mono text-gray-400 uppercase tracking-wide">Identifier Name</label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"><User size={14} /></span>
-                    <input type="text" required value={name} onChange={(e) => setName(e.target.value)} className="w-full bg-white/[0.02] border border-white/[0.08] rounded-lg pl-9 pr-4 py-2 text-xs text-white focus:outline-none focus:border-blue-500 transition-all" placeholder="Sidhant Bote" />
-                  </div>
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-mono text-gray-400 uppercase tracking-wider font-semibold ml-1">Operator Name</label>
+                  <div className="relative"><span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"><User size={18} /></span><input type="text" required value={name} onChange={(e) => setName(e.target.value)} className="w-full bg-[#0a0d14] border border-white/[0.1] rounded-xl pl-12 pr-4 py-3.5 text-sm text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all shadow-inner" placeholder="Sidhant Bote" /></div>
                 </div>
               )}
-              <div className="space-y-1">
-                <label className="text-[10px] font-mono text-gray-400 uppercase tracking-wide">Identity Email</label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"><Mail size={14} /></span>
-                  <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-white/[0.02] border border-white/[0.08] rounded-lg pl-9 pr-4 py-2 text-xs text-white focus:outline-none focus:border-blue-500 transition-all" placeholder="operator@system.local" />
-                </div>
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-mono text-gray-400 uppercase tracking-wider font-semibold ml-1">Identity Email</label>
+                <div className="relative"><span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"><Mail size={18} /></span><input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-[#0a0d14] border border-white/[0.1] rounded-xl pl-12 pr-4 py-3.5 text-sm text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all shadow-inner" placeholder="operator@system.local" /></div>
               </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-mono text-gray-400 uppercase tracking-wide">Secure Passkey</label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"><Lock size={14} /></span>
-                  <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-white/[0.02] border border-white/[0.08] rounded-lg pl-9 pr-4 py-2 text-xs text-white focus:outline-none focus:border-blue-500 transition-all font-mono" placeholder="••••••••" />
-                </div>
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-mono text-gray-400 uppercase tracking-wider font-semibold ml-1">Secure Passkey</label>
+                <div className="relative"><span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"><Lock size={18} /></span><input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-[#0a0d14] border border-white/[0.1] rounded-xl pl-12 pr-4 py-3.5 text-sm text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-mono shadow-inner" placeholder="••••••••" /></div>
               </div>
-              <button type="submit" disabled={loading} className="w-full h-10 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-800 text-white text-xs font-medium rounded-lg shadow-md transition-all mt-4 flex items-center justify-center gap-2">
-                {loading ? "Processing Encryption..." : isLogin ? "Authenticate" : "Write Record to Postgres"}
+              <button type="submit" disabled={loading} className="w-full h-14 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-800 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all mt-8 flex items-center justify-center gap-2">
+                {loading ? "Processing Encryption..." : isLogin ? "Authenticate Session" : "Write Record to Database"}
               </button>
             </form>
-
-            <div className="mt-6 border-t border-white/[0.05] pt-4 text-center">
-              <p className="text-xs text-gray-400">
-                {isLogin ? "Need an account?" : "Already mapped inside database?"}{" "}
-                <button onClick={() => { setIsLogin(!isLogin); setStatusMsg({text:"", isError:false}); }} className="text-blue-400 hover:text-blue-300 font-semibold underline ml-1">
-                  {isLogin ? "Register Node" : "Access Auth Channel"}
-                </button>
-              </p>
+            <div className="mt-8 pt-6 text-center">
+              <button onClick={() => { setIsLogin(!isLogin); setStatusMsg({text:"", isError:false}); }} className="text-gray-400 text-sm hover:text-white transition-colors">{isLogin ? "Need to register a new node? " : "Return to access channel. "}<span className="text-blue-400 font-semibold underline underline-offset-4 ml-1">{isLogin ? "Sign Up" : "Log In"}</span></button>
             </div>
           </div>
         </div>

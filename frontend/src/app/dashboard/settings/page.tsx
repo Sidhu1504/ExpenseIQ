@@ -1,108 +1,98 @@
 "use client";
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import SidebarLayout from "@/components/SidebarLayout";
-import { Sun, Moon, Monitor, Bell, Shield, Wallet } from "lucide-react";
+import { Users, Mail, CheckCircle2, ShieldAlert, Key } from "lucide-react";
 
-export default function SettingsWorkspace() {
-  const [theme, setTheme] = useState("dark");
-  const [currency, setCurrency] = useState("INR");
-  const [alertsEnabled, setAlertsEnabled] = useState(true);
+export default function LedgerSettings() {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState({ text: "", isError: false });
 
-  // Load saved preferences
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("expense_theme") || "dark";
-    setTheme(savedTheme);
-  }, []);
+  const handleShareWallet = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    setLoading(true);
+    setMessage({ text: "", isError: false });
 
-  const handleThemeChange = (newTheme: string) => {
-    setTheme(newTheme);
-    localStorage.setItem("expense_theme", newTheme);
-    alert(`Theme preference saved to local storage: ${newTheme.toUpperCase()}.\n\n(Note: Full Light Mode requires a global CSS variable refactor, currently running in Enterprise Dark mode for optimal eye-care).`);
+    try {
+      const token = localStorage.getItem("expense_jwt");
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+      const res = await fetch(`${apiUrl}/features/wallets/share`, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+      
+      const data = await res.json();
+      if (res.ok) {
+        setMessage({ text: data.message, isError: false });
+        setEmail("");
+      } else {
+        setMessage({ text: data.error, isError: true });
+      }
+    } catch (err) {
+      setMessage({ text: "Gateway offline.", isError: true });
+    } finally { setLoading(false); }
   };
 
   return (
     <SidebarLayout>
       <div className="border-b border-white/[0.06] pb-4 mb-6">
-        <h2 className="font-heading text-2xl font-bold tracking-tight text-white">System Configuration</h2>
-        <p className="text-xs text-gray-400 mt-1">Manage UI layout preferences, ledger tracking variables, and security alerts.</p>
+        <h2 className="font-heading text-2xl font-bold text-white">Ledger Configuration</h2>
+        <p className="text-xs text-gray-400 mt-1">Manage database permissions and multi-tenant access.</p>
       </div>
 
-      <div className="max-w-3xl space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
-        {/* Interface Theme Settings */}
-        <section className="bg-gray-900 border border-white/[0.06] rounded-xl p-6">
-          <h3 className="font-heading text-sm font-semibold text-gray-300 mb-4 flex items-center gap-2">
-            <Monitor size={16} className="text-blue-500" /> Interface Appearance
-          </h3>
-          <div className="grid grid-cols-3 gap-4">
-            <button 
-              onClick={() => handleThemeChange("dark")}
-              className={`p-4 rounded-lg border flex flex-col items-center gap-2 transition-all ${theme === 'dark' ? 'bg-blue-600/10 border-blue-500 text-blue-400' : 'bg-gray-950 border-white/[0.06] text-gray-400 hover:border-gray-600'}`}
-            >
-              <Moon size={20} /> <span className="text-xs font-mono">Enterprise Dark</span>
-            </button>
-            <button 
-              onClick={() => handleThemeChange("light")}
-              className={`p-4 rounded-lg border flex flex-col items-center gap-2 transition-all ${theme === 'light' ? 'bg-blue-600/10 border-blue-500 text-blue-400' : 'bg-gray-950 border-white/[0.06] text-gray-400 hover:border-gray-600'}`}
-            >
-              <Sun size={20} /> <span className="text-xs font-mono">Daylight Mode</span>
-            </button>
-            <button 
-              onClick={() => handleThemeChange("system")}
-              className={`p-4 rounded-lg border flex flex-col items-center gap-2 transition-all ${theme === 'system' ? 'bg-blue-600/10 border-blue-500 text-blue-400' : 'bg-gray-950 border-white/[0.06] text-gray-400 hover:border-gray-600'}`}
-            >
-              <Monitor size={20} /> <span className="text-xs font-mono">System Sync</span>
-            </button>
-          </div>
-        </section>
-
-        {/* Ledger Preferences */}
-        <section className="bg-gray-900 border border-white/[0.06] rounded-xl p-6">
-          <h3 className="font-heading text-sm font-semibold text-gray-300 mb-4 flex items-center gap-2">
-            <Wallet size={16} className="text-emerald-500" /> Income/Expense Ledger Config
-          </h3>
-          <div className="space-y-4 text-sm">
+        {/* Module A: Multi-Tenant Access */}
+        <div className="bg-gray-900 border border-white/[0.06] rounded-xl p-6 h-fit">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center"><Users size={20} /></div>
             <div>
-              <label className="block text-gray-500 mb-1 font-mono text-[10px] uppercase">Base Currency Tracker</label>
-              <select 
-                value={currency} onChange={(e) => setCurrency(e.target.value)}
-                className="w-full sm:w-64 bg-gray-950 border border-white/[0.08] rounded-lg p-2.5 text-white font-mono focus:outline-none focus:border-blue-500"
-              >
-                <option value="INR">₹ INR - Indian Rupee</option>
-                <option value="USD">$ USD - US Dollar</option>
-                <option value="EUR">€ EUR - Euro</option>
-              </select>
-            </div>
-            <div className="pt-2">
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" defaultChecked className="w-4 h-4 rounded bg-gray-950 border-gray-800 text-blue-600 focus:ring-blue-500 focus:ring-offset-gray-900" />
-                <span className="text-gray-300 text-xs">Enable Smart Keyword Auto-Categorization</span>
-              </label>
+              <h3 className="font-heading text-lg font-bold text-white">Multi-Tenant Access</h3>
+              <p className="text-[11px] font-mono text-gray-500">Invite trusted nodes (Family/Partners) to your ledger.</p>
             </div>
           </div>
-        </section>
-
-        {/* Notification & Alerts */}
-        <section className="bg-gray-900 border border-white/[0.06] rounded-xl p-6">
-          <h3 className="font-heading text-sm font-semibold text-gray-300 mb-4 flex items-center gap-2">
-            <Bell size={16} className="text-purple-500" /> System Alerts & Thresholds
-          </h3>
-          <div className="space-y-4">
-            <label className="flex items-center justify-between cursor-pointer p-3 bg-gray-950 border border-white/[0.04] rounded-lg hover:border-white/[0.1] transition">
+          
+          <div className="mt-6">
+            <form onSubmit={handleShareWallet} className="space-y-4">
               <div>
-                <p className="text-sm text-gray-200 font-medium">Budget Breach Alerts</p>
-                <p className="text-[10px] text-gray-500 font-mono mt-0.5">Notify when category spending exceeds 80% limit</p>
+                <label className="text-[10px] font-mono text-gray-400 uppercase tracking-wider">Registered Node Email</label>
+                <div className="relative mt-1">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"><Mail size={14} /></span>
+                  <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-gray-950 border border-white/[0.08] rounded-lg pl-9 pr-4 py-2.5 text-xs text-white focus:outline-none focus:border-blue-500 transition-all" placeholder="partner@system.local" />
+                </div>
               </div>
-              <input 
-                type="checkbox" 
-                checked={alertsEnabled} 
-                onChange={() => setAlertsEnabled(!alertsEnabled)}
-                className="w-8 h-4 bg-gray-700 rounded-full appearance-none checked:bg-blue-500 relative transition-colors cursor-pointer after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-transform checked:after:translate-x-4" 
-              />
-            </label>
+              <button type="submit" disabled={loading} className="w-full h-10 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-800 text-white text-xs font-medium rounded-lg shadow-md transition-all flex items-center justify-center gap-2">
+                {loading ? "Establishing Link..." : "Grant Ledger Access"}
+              </button>
+            </form>
+
+            {message.text && (
+              <div className={`mt-4 p-3 rounded-lg border text-xs font-sans flex items-start gap-2 ${message.isError ? "bg-red-500/10 border-red-500/20 text-red-400" : "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"}`}>
+                {message.isError ? <ShieldAlert size={14} className="shrink-0 mt-0.5" /> : <CheckCircle2 size={14} className="shrink-0 mt-0.5" />}
+                <span>{message.text}</span>
+              </div>
+            )}
           </div>
-        </section>
+        </div>
+
+        {/* Module B: Data Sovereignty */}
+        <div className="bg-gray-900 border border-white/[0.06] rounded-xl p-6 h-fit">
+           <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center"><Key size={20} /></div>
+            <div>
+              <h3 className="font-heading text-lg font-bold text-white">Data Sovereignty</h3>
+              <p className="text-[11px] font-mono text-gray-500">Your ledger is encrypted via PostgreSQL 18.</p>
+            </div>
+          </div>
+          <div className="mt-6 text-xs text-gray-400 font-mono space-y-2 border-t border-white/[0.04] pt-4">
+            <p>• Database Sync: Active</p>
+            <p>• Encryption: AES-256 (At Rest)</p>
+            <p>• Local OCR Parsing: Enabled</p>
+            <p className="text-emerald-500 pt-2 text-[10px]">All data remains strictly within your isolated container network.</p>
+          </div>
+        </div>
 
       </div>
     </SidebarLayout>

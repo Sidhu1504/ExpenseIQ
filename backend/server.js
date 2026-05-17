@@ -27,6 +27,9 @@ featureRoutes.post('/splits', featureController.createSplit);
 featureRoutes.put('/splits/:id/settle', featureController.settleSplit);
 featureRoutes.post('/import/bulk', featureController.bulkImportTransactions);
 featureRoutes.get('/audit/logs', featureController.getAuditLogs);
+featureRoutes.post('/wallets/share', featureController.shareWallet);
+featureRoutes.get('/2fa/generate', featureController.generate2FA);
+featureRoutes.post('/2fa/verify', featureController.verify2FA);
 
 const app = express();
 app.use(cors());

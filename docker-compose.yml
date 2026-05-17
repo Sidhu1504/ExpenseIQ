@@ -6,7 +6,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://3.144.165.94:3001/api
+      - ALLOWED_DEV_IP=${HOST_IP}
+      - NEXT_PUBLIC_API_URL=http://${HOST_IP}:3001/api
     depends_on:
       - api
     volumes:
@@ -51,6 +52,17 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api
+      - web
 
 volumes:
   pgdata:

@@ -7,7 +7,7 @@ const withPWA = require('next-pwa')({
 });
 
 const nextConfig = {
-  allowedDevOrigins: ['3.144.165.94'],
+  allowedDevOrigins: [process.env.ALLOWED_DEV_IP || 'localhost'],
   devIndicators: { appIsrStatus: false },
   turbopack: {}, // <-- THIS LINE FIXES THE CRASH
 };
