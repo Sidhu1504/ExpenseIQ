@@ -22,6 +22,11 @@ featureRoutes.get('/subscriptions', featureController.getSubscriptions);
 featureRoutes.get('/goals', featureController.getGoals);
 featureRoutes.post('/subscriptions', featureController.createSubscription);
 featureRoutes.post('/goals', featureController.createGoal);
+featureRoutes.get('/splits', featureController.getSplits);
+featureRoutes.post('/splits', featureController.createSplit);
+featureRoutes.put('/splits/:id/settle', featureController.settleSplit);
+featureRoutes.post('/import/bulk', featureController.bulkImportTransactions);
+featureRoutes.get('/audit/logs', featureController.getAuditLogs);
 
 const app = express();
 app.use(cors());

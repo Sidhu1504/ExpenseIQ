@@ -93,3 +93,25 @@ CREATE TABLE IF NOT EXISTS goals (
     current_amount DECIMAL(10, 2) DEFAULT 0,
     deadline DATE
 );
+
+ALTER TABLE budgets ALTER COLUMN category_id DROP NOT NULL;
+
+CREATE TABLE IF NOT EXISTS splits (
+    id SERIAL PRIMARY KEY,
+    user_id UUID NOT NULL,
+    friend_name VARCHAR(255) NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    total_amount DECIMAL(10, 2) NOT NULL,
+    amount_owed DECIMAL(10, 2) NOT NULL,
+    status VARCHAR(50) DEFAULT 'pending',
+    date DATE DEFAULT CURRENT_DATE
+);
+
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id SERIAL PRIMARY KEY,
+    user_id UUID NOT NULL,
+    action VARCHAR(255) NOT NULL,
+    ip_address VARCHAR(45),
+    device VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

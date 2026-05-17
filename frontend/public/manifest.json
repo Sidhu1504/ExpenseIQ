@@ -1,0 +1,18 @@
+{
+  "name": "ExpenseIQ Enterprise",
+  "short_name": "ExpenseIQ",
+  "theme_color": "#070a13",
+  "background_color": "#070a13",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/5501/5501375.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

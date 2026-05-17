@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { 
   Wallet, Shield, BellRing, Sparkles, Receipt, CalendarClock,
   ArrowRight, Lock, Mail, User, X, ShieldCheck, Heart,
-  Briefcase, TrendingUp, HelpCircle, MapPin, Phone, Terminal
+  Briefcase, TrendingUp, HelpCircle, MapPin, Phone, Terminal,
+  HardDriveDownload, WifiOff, Users, Target, ShieldAlert
 } from "lucide-react";
 
 export default function LuxuryLandingPortal() {
@@ -59,19 +60,34 @@ export default function LuxuryLandingPortal() {
 
   const userBenefits = [
     {
+      icon: HardDriveDownload,
+      title: "Bulk CSV Parsing Engine",
+      desc: "Migrate instantly. Drag and drop your bank statement CSVs to ingest thousands of transaction rows into your database in under 2 seconds."
+    },
+    {
+      icon: Users,
+      title: "Split Expense Matrix",
+      desc: "Like Splitwise, but native. Track shared dinner bills, rent, and trips. See exactly who owes you money and settle balances with one click."
+    },
+    {
+      icon: WifiOff,
+      title: "PWA Offline Architecture",
+      desc: "Install ExpenseIQ directly to your phone or desktop. The Progressive Web App caches your dashboard locally so you can log expenses without internet."
+    },
+    {
+      icon: Target,
+      title: "Savings Goal Visualizer",
+      desc: "Set high-capital targets like a new MacBook or a Goa trip. Watch your progress bar fill up as your automated budget saves money for you."
+    },
+    {
+      icon: ShieldAlert,
+      title: "Security Audit Logging",
+      desc: "Enterprise-grade session tracking. Monitor the IP address and device of every login. Detect anomalies and instantly terminate rogue sessions."
+    },
+    {
       icon: Receipt,
-      title: "Snap & Log Receipt Scanner",
-      desc: "Stop typing expenses manually. Take a picture of your dinner bill or grocery receipt, and our local engine reads the shop name, date, and final price automatically using zero-fee local OCR processing channels."
-    },
-    {
-      icon: BellRing,
-      title: "Smart Budget Overspending Shield",
-      desc: "Set monthly spending boundaries for food, travel, or clothes. The system tracks your ledger in real-time and alerts you instantly before you accidentally break your savings strategy."
-    },
-    {
-      icon: CalendarClock,
-      title: "Subscription & Bill Tracker",
-      desc: "Never pay for an app or gym membership you forgot about. Track streaming trials, monthly utilities, and recurring cash cycles effortlessly from one clean, automated calendar matrix grid."
+      title: "Offline Receipt OCR",
+      desc: "Take a picture of a receipt. Our localized Tesseract engine reads the shop name and final price without sending your metadata to third-party APIs."
     }
   ];
 
@@ -84,7 +100,7 @@ export default function LuxuryLandingPortal() {
     {
       icon: Briefcase,
       title: "Corporate Travel & Expense Management",
-      detail: "Compile scanned receipts, tax configurations, and business travel allocations into instant structured tables ready for accounting submission."
+      detail: "Compile scanned receipts, tax configurations, and business travel allocations into instant structured tables ready for accounting CSV submission."
     },
     {
       icon: TrendingUp,
@@ -93,42 +109,23 @@ export default function LuxuryLandingPortal() {
     }
   ];
 
-  const faqItems = [
-    { q: "Is my personal financial data shared with external networks?", a: "Absolutely not. ExpenseIQ functions on a strict privacy model. All receipt scanning and ledger computations are kept secure within your local isolated database layer." },
-    { q: "Do I need premium paid tokens or AI keys to scan receipts?", a: "No keys required. The engine runs a fully integrated, open-source structural layout parser that reads and identifies receipt matrices out-of-the-box." },
-    { q: "Can I extract my data for standard corporate tax calculations?", a: "Yes. The platform generates comprehensive data exports, allowing you to instantly pull your ledger rows directly into clean spreadsheet formats anytime." }
-  ];
-
   return (
     <div className="min-h-screen bg-[#05070f] text-gray-100 font-sans selection:bg-blue-600 selection:text-white relative flex flex-col justify-between overflow-x-hidden">
       
-      {/* 🌌 High-Fidelity Floating Gradient Mesh & Net Background */}
+      {/* 🌌 High-Fidelity Floating Gradient Mesh Background */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a_1px,transparent_1px),linear-gradient(to_bottom,#0f172a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] z-0 pointer-events-none" />
       <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[1200px] h-[450px] bg-gradient-to-b from-blue-500/10 to-transparent blur-[140px] rounded-full pointer-events-none z-0" />
-      <div className="absolute top-[40%] left-[-20%] w-[600px] h-[600px] bg-purple-500/5 blur-[160px] rounded-full pointer-events-none z-0" />
-
+      
       {/* 🌐 Top Premium Navigation Ribbon */}
       <nav className="w-full h-20 border-b border-white/[0.05] bg-[#05070f]/70 backdrop-blur-md relative z-40 px-6 xl:px-12 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-heading font-black text-white text-base shadow-lg shadow-blue-500/20">
-            ₹
-          </div>
-          <span className="font-heading font-bold text-lg tracking-tight text-white transition-all hover:opacity-90">
-            ExpenseIQ
-          </span>
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-heading font-black text-white text-base shadow-lg shadow-blue-500/20">₹</div>
+          <span className="font-heading font-bold text-lg tracking-tight text-white transition-all hover:opacity-90">ExpenseIQ</span>
         </div>
 
         <div className="flex items-center gap-4">
-          <button 
-            onClick={() => { setIsLogin(true); setStatusMsg({text:"", isError:false}); setIsAuthOpen(true); }}
-            className="text-xs font-mono font-medium text-gray-400 hover:text-white transition-colors"
-          >
-            [ Sign In ]
-          </button>
-          <button 
-            onClick={() => { setIsLogin(false); setStatusMsg({text:"", isError:false}); setIsAuthOpen(true); }}
-            className="bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs px-4 h-9 rounded-lg shadow-md shadow-blue-600/10 transition-all flex items-center justify-center gap-1.5 group"
-          >
+          <button onClick={() => { setIsLogin(true); setStatusMsg({text:"", isError:false}); setIsAuthOpen(true); }} className="text-xs font-mono font-medium text-gray-400 hover:text-white transition-colors">[ Sign In ]</button>
+          <button onClick={() => { setIsLogin(false); setStatusMsg({text:"", isError:false}); setIsAuthOpen(true); }} className="bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs px-4 h-9 rounded-lg shadow-md shadow-blue-600/10 transition-all flex items-center justify-center gap-1.5 group">
             <span>Get Started Free</span>
             <ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />
           </button>
@@ -138,32 +135,29 @@ export default function LuxuryLandingPortal() {
       {/* 🚀 Hero Presentation Layer */}
       <section className="pt-28 pb-16 px-6 max-w-5xl mx-auto text-center relative z-10 flex flex-col justify-center items-center">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-950/40 border border-blue-500/20 text-blue-400 text-[10px] font-mono uppercase tracking-wide mb-6 shadow-sm">
-          <Sparkles size={12} className="text-yellow-400 animate-spin-slow" /> Master Your Financial Cash Flow Completely Offline
+          <Sparkles size={12} className="text-yellow-400 animate-spin-slow" /> Deployed with Offline PWA Architecture
         </div>
         <h1 className="font-heading text-4xl sm:text-6xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-[1.1] transition-all">
-          Take Control of Your Daily Expenses with <span className="text-gradient-purple-blue">Zero Effort</span>
+          Take Control of Your Daily Expenses with <span className="text-gradient-purple-blue">God-Mode Access</span>
         </h1>
         <p className="mt-5 text-base sm:text-md text-gray-400 max-w-2xl mx-auto font-sans leading-relaxed">
-          The ultimate personal finance workstation built to organize your financial life. Track spending limits, automate bill schedules, and scan physical receipts instantly—all from one secure, beautifully structured cloud portal.
+          The ultimate personal finance workstation. Track spending, split bills with friends, import CSV bank statements, and secure your session logs—all from one highly scalable cloud portal.
         </p>
 
         <div className="mt-8 flex items-center gap-4">
-          <button 
-            onClick={() => { setIsLogin(true); setStatusMsg({text:"", isError:false}); setIsAuthOpen(true); }}
-            className="bg-blue-600 text-white font-semibold text-sm px-8 h-12 rounded-lg hover:bg-blue-500 transition-all duration-300 shadow-xl shadow-blue-600/20 hover:scale-[1.02]"
-          >
+          <button onClick={() => { setIsLogin(true); setStatusMsg({text:"", isError:false}); setIsAuthOpen(true); }} className="bg-blue-600 text-white font-semibold text-sm px-8 h-12 rounded-lg hover:bg-blue-500 transition-all duration-300 shadow-xl shadow-blue-600/20 hover:scale-[1.02]">
             Open Dashboard Workspace
           </button>
         </div>
       </section>
 
-      {/* 🛠️ Core Functional Specifications Grid */}
+      {/* 🛠️ Expanded Core Functional Specifications Grid */}
       <section className="py-16 px-6 max-w-6xl mx-auto relative z-10 border-t border-white/[0.05]">
         <div className="text-center mb-12">
           <h2 className="font-heading text-xs font-bold text-blue-500 uppercase tracking-widest mb-2">Capabilities Matrix</h2>
           <p className="text-xl font-bold text-white">Engineered Features for Daily Financial Clarity</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {userBenefits.map((benefit, i) => {
             const Icon = benefit.icon;
             return (
@@ -179,12 +173,8 @@ export default function LuxuryLandingPortal() {
         </div>
       </section>
 
-      {/* 💼 Real-World Use Cases Array Layout */}
+      {/* 💼 Real-World Use Cases */}
       <section className="py-16 px-6 max-w-6xl mx-auto relative z-10 border-t border-white/[0.05]">
-        <div className="text-center mb-12">
-          <h2 className="font-heading text-xs font-bold text-purple-500 uppercase tracking-widest mb-2">Deployment Contexts</h2>
-          <p className="text-xl font-bold text-white">Tailored Flow Systems For Every Workflow</p>
-        </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {appUseCases.map((useCase, idx) => {
             const CaseIcon = useCase.icon;
@@ -201,106 +191,54 @@ export default function LuxuryLandingPortal() {
         </div>
       </section>
 
-      {/* ❓ Interactive FAQ Accordion Console */}
-      <section className="py-16 px-6 max-w-4xl mx-auto relative z-10 border-t border-white/[0.05]">
-        <div className="text-center mb-12">
-          <h2 className="font-heading text-xs font-bold text-emerald-500 uppercase tracking-widest mb-2">Common Questions</h2>
-          <p className="text-xl font-bold text-white">Frequently Reviewed Operations</p>
-        </div>
-        <div className="space-y-4">
-          {faqItems.map((faq, i) => (
-            <div key={i} className="bg-white/[0.01] border border-white/[0.04] rounded-lg p-5">
-              <div className="flex gap-3 text-sm font-heading font-bold text-gray-200">
-                <HelpCircle size={16} className="text-blue-400 shrink-0 mt-0.5" />
-                <h4>{faq.q}</h4>
-              </div>
-              <p className="text-xs text-gray-400 font-sans mt-2.5 pl-7 leading-relaxed border-l border-white/[0.04] ml-2">
-                {faq.a}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* 🗺️ Professional Corporate Footer Layout */}
       <footer className="w-full border-t border-white/[0.06] bg-[#03050a] relative z-10 font-sans text-xs pt-12 pb-6">
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-left mb-10">
-          
-          {/* Node Profile Summary */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded bg-blue-600 flex items-center justify-center font-bold text-white text-xs">₹</div>
               <span className="font-heading font-bold text-sm tracking-tight text-white">ExpenseIQ Enterprise</span>
             </div>
-            <p className="text-[11px] text-gray-500 font-sans leading-relaxed max-w-xs">
-              Next-generation high-performance expense ecosystem designed to manage metrics, automate cash flows, and maximize local ledger efficiency safely.
-            </p>
+            <p className="text-[11px] text-gray-500 font-sans leading-relaxed max-w-xs">Next-generation high-performance expense ecosystem designed to manage metrics, automate cash flows, and maximize local ledger efficiency safely.</p>
           </div>
-
-          {/* Operational Infrastructure Links */}
           <div className="space-y-3">
             <h5 className="font-heading text-xs font-bold text-gray-300 uppercase tracking-wider">System Blueprints</h5>
             <div className="flex flex-col gap-2 font-mono text-[11px] text-gray-400">
-              <a href="https://github.com/Sidhu1504/Expense-manager-Application.git" target="_blank" className="flex items-center gap-2 hover:text-white transition">
-                <Terminal size={13} /> Source Repository
-              </a>
-              <a href="https://www.linkedin.com/in/sidhant-bote/" target="_blank" className="flex items-center gap-2 hover:text-white transition">
-                <User size={13} /> Engineering Network
-              </a>
+              <a href="https://github.com/Sidhu1504/Expense-manager-Application.git" target="_blank" className="flex items-center gap-2 hover:text-white transition"><Terminal size={13} /> Source Repository</a>
+              <a href="https://www.linkedin.com/in/sidhant-bote/" target="_blank" className="flex items-center gap-2 hover:text-white transition"><User size={13} /> Engineering Network</a>
             </div>
           </div>
-
-          {/* Location & Contact Information */}
           <div className="space-y-3">
             <h5 className="font-heading text-xs font-bold text-gray-300 uppercase tracking-wider">Operational Base</h5>
             <div className="flex flex-col gap-2.5 text-gray-400 font-sans text-[11px]">
-              <div className="flex items-start gap-2">
-                <MapPin size={13} className="text-blue-500 shrink-0 mt-0.5" />
-                <span>Viman Nagar, Pune, Maharashtra, India</span>
-              </div>
-              <div className="flex items-center gap-2 font-mono">
-                <Phone size={13} className="text-emerald-500" />
-                <span>+91 7385799333</span>
-              </div>
+              <div className="flex items-start gap-2"><MapPin size={13} className="text-blue-500 shrink-0 mt-0.5" /><span>Viman Nagar, Pune, Maharashtra, India</span></div>
+              <div className="flex items-center gap-2 font-mono"><Phone size={13} className="text-emerald-500" /><span>+91 7385799333</span></div>
             </div>
           </div>
         </div>
 
-        {/* ❤️ Love Signature Layout */}
         <div className="border-t border-white/[0.04] pt-6 max-w-6xl mx-auto px-6 text-center text-gray-600 font-mono text-[11px] flex flex-col sm:flex-row justify-between items-center gap-3">
           <p>© {new Date().getFullYear()} ExpenseIQ Ledger Systems. All data sovereign.</p>
           <div className="flex items-center gap-1.5 bg-white/[0.02] border border-white/[0.04] px-3 py-1 rounded-full">
-            <span>Made with</span>
-            <Heart size={11} className="text-red-500 fill-red-500 animate-pulse" />
-            <span>from India by</span>
-            <span className="text-gray-300 font-sans font-semibold tracking-wide">Sid</span>
+            <span>Made with</span><Heart size={11} className="text-red-500 fill-red-500 animate-pulse" /><span>from India by</span><span className="text-gray-300 font-sans font-semibold tracking-wide">Sid</span>
           </div>
         </div>
       </footer>
 
-      {/* 🔐 Authentication Handler Portal Modal */}
+      {/* 🔐 Authentication Modal */}
       {isAuthOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fade-in">
           <div className="w-full max-w-[420px] bg-gray-900/90 border border-white/[0.08] rounded-2xl p-8 shadow-2xl relative transition-all">
-            <button onClick={() => setIsAuthOpen(false)} className="absolute right-4 top-4 text-gray-500 hover:text-gray-300 transition-colors">
-              <X size={18} />
-            </button>
+            <button onClick={() => setIsAuthOpen(false)} className="absolute right-4 top-4 text-gray-500 hover:text-gray-300 transition-colors"><X size={18} /></button>
             <div className="flex flex-col items-center mb-6 text-center">
-              <div className="w-10 h-10 rounded-xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mb-3">
-                <Wallet size={18} />
-              </div>
-              <h3 className="font-heading text-xl font-bold text-white">
-                {isLogin ? "System Access Authorization" : "Initialize Identity Node"}
-              </h3>
+              <div className="w-10 h-10 rounded-xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mb-3"><Wallet size={18} /></div>
+              <h3 className="font-heading text-xl font-bold text-white">{isLogin ? "System Access Authorization" : "Initialize Identity Node"}</h3>
               <p className="text-[11px] text-gray-500 font-mono mt-1">PostgreSQL 18 Secure Handshake</p>
             </div>
 
             {statusMsg.text && (
-              <div className={`mb-4 p-3 rounded-lg border text-xs font-sans flex items-center gap-2 ${
-                statusMsg.isError ? "bg-red-500/10 border-red-500/20 text-red-400" : "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
-              }`}>
-                <ShieldCheck size={14} className="shrink-0" />
-                <span>{statusMsg.text}</span>
+              <div className={`mb-4 p-3 rounded-lg border text-xs font-sans flex items-center gap-2 ${statusMsg.isError ? "bg-red-500/10 border-red-500/20 text-red-400" : "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"}`}>
+                <ShieldCheck size={14} className="shrink-0" /><span>{statusMsg.text}</span>
               </div>
             )}
 
