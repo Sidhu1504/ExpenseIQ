@@ -151,7 +151,16 @@ nginx -v    # should print nginx/1.24.x or higher
 
 ---
 
-### Step 1 — Create the PostgreSQL database and user
+### Step 1 — Clone the repository
+
+```bash
+cd /opt
+sudo git clone https://github.com/Sidhu1504/ExpenseIQ.git
+sudo chown -R $USER:$USER /opt/ExpenseIQ
+cd /opt/ExpenseIQ
+```
+
+### Step 2 — Create the PostgreSQL database and user
 
 Switch to the `postgres` system user and enter the PostgreSQL shell:
 
@@ -165,16 +174,20 @@ Inside the `psql` shell, run each of these lines one at a time:
 CREATE USER expenseiq_user WITH PASSWORD 'your_strong_password_here';
 CREATE DATABASE expense_db OWNER expenseiq_user;
 GRANT ALL PRIVILEGES ON DATABASE expense_db TO expenseiq_user;
+ALTER DATABASE expense_db OWNER TO expenseiq_user;
+ALTER SCHEMA public OWNER TO expenseiq_user;
 \q
 ```
 
 Replace `your_strong_password_here` with a strong password. Write it down — you will
 need it in the `.env` file later.
 
-### Step 2 — Load the database schema
+### Step 3 — Load the database schema
+
+you must have created this user 'expenseiq_user':
 
 ```bash
-sudo -u postgres psql -d expense_db -f /path/to/ExpenseIQ/db/schema.sql
+sudo -u expenseiq_user psql -d expense_db -f db/schema.sql
 ```
 
 If you have not cloned the repo yet, do Step 3 first and come back here.
@@ -182,20 +195,11 @@ If you have not cloned the repo yet, do Step 3 first and come back here.
 Verify that all tables were created:
 
 ```bash
-sudo -u postgres psql -d expense_db -c "\dt"
+sudo -u expenseiq_user psql -d expense_db -c "\dt"
 ```
 
 You should see: `audit_logs`, `budgets`, `categories`, `goals`, `splits`,
 `subscriptions`, `transactions`, `users`, `wallet_members`, `wallets`.
-
-### Step 3 — Clone the repository
-
-```bash
-cd /opt
-sudo git clone https://github.com/Sidhu1504/ExpenseIQ.git
-sudo chown -R $USER:$USER /opt/ExpenseIQ
-cd /opt/ExpenseIQ
-```
 
 ### Step 4 — Configure the backend environment
 
@@ -266,7 +270,7 @@ pm2 start server.js --name expenseiq-backend --env production
 
 # Start the frontend (Next.js production server)
 cd /opt/ExpenseIQ/frontend
-pm2 start npm --name expenseiq-frontend -- start
+pm2 start npm --name expenseiq-frontend -- start -- -p 3001
 
 # Save the process list so PM2 restores them on reboot
 pm2 save
