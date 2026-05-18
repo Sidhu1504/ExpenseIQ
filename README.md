@@ -314,46 +314,40 @@ sudo nano /etc/nginx/sites-available/expenseiq
 Paste the following (replace `your_server_ip_or_domain` with your actual IP or domain):
 
 ```nginx
-events {
-    worker_connections 1024;
+upstream backend {
+    server 127.0.0.1:3000;
 }
 
-http {
-    upstream backend {
-        server 127.0.0.1:3000;
+upstream frontend {
+    server 127.0.0.1:3001;
+}
+
+server {
+    listen 80;
+    server_name your_server_ip_or_domain; # Don't forget to change this!
+
+    # Backend API
+    location /api/ {
+        proxy_pass http://backend/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_cache_bypass $http_upgrade;
     }
 
-    upstream frontend {
-        server 127.0.0.1:3001;
-    }
-
-    server {
-        listen 80;
-        server_name your_server_ip_or_domain;
-
-        # Backend API
-        location /api/ {
-            proxy_pass http://backend/api/;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection 'upgrade';
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_cache_bypass $http_upgrade;
-        }
-
-        # Frontend
-        location / {
-            proxy_pass http://frontend/;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection 'upgrade';
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_cache_bypass $http_upgrade;
-        }
+    # Frontend
+    location / {
+        proxy_pass http://frontend/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_cache_bypass $http_upgrade;
     }
 }
 ```
