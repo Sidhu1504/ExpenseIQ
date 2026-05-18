@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: expenseiq-frontend-service
+  namespace: expenseiq
+  labels:
+    app: expenseiq-frontend
+    app.kubernetes.io/part-of: expenseiq
+spec:
+  selector:
+    app: expenseiq-frontend
+  ports:
+    - port: 3000
+      targetPort: 3000
+      name: http

@@ -1,0 +1,35 @@
+# Headless service — required by the StatefulSet for stable pod DNS
+# (expenseiq-postgres-0.expenseiq-postgres-service.expenseiq.svc.cluster.local)
+apiVersion: v1
+kind: Service
+metadata:
+  name: expenseiq-postgres-service
+  namespace: expenseiq
+  labels:
+    app: expenseiq-postgres
+    app.kubernetes.io/part-of: expenseiq
+spec:
+  clusterIP: None
+  selector:
+    app: expenseiq-postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+      name: postgres
+---
+# Regular ClusterIP — what the backend uses for DATABASE_URL
+apiVersion: v1
+kind: Service
+metadata:
+  name: expenseiq-postgres-clusterip
+  namespace: expenseiq
+  labels:
+    app: expenseiq-postgres
+    app.kubernetes.io/part-of: expenseiq
+spec:
+  selector:
+    app: expenseiq-postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+      name: postgres

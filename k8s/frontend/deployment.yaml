@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expenseiq-frontend
+  namespace: expenseiq
+  labels:
+    app: expenseiq-frontend
+    app.kubernetes.io/part-of: expenseiq
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: expenseiq-frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+
+  template:
+    metadata:
+      labels:
+        app: expenseiq-frontend
+    spec:
+      containers:
+        - name: frontend
+          # ── IMPORTANT — build this image with the API URL baked in ──
+          # NEXT_PUBLIC_* vars are embedded into the JS bundle at BUILD TIME,
+          # not at pod startup.  Build with:
+          #
+          #   docker build \
+          #     --build-arg NEXT_PUBLIC_API_URL=/api \
+          #     -t expenseiq-frontend:latest \
+          #     ./frontend
+          #
+          # With the Ingress below, /api is routed to the backend so the
+          # relative path works from any domain without hardcoding a hostname.
+          #
+          # The Dockerfile currently runs `npm run dev`.  For production,
+          # either override CMD here or add a production stage:
+          #   CMD ["sh", "-c", "npm run build && npm start"]
+          image: expenseiq-frontend:latest
+          imagePullPolicy: IfNotPresent
+
+          # Override dev CMD — build then start in production mode
+          command: ["sh", "-c", "npm run build && npm start"]
+
+          ports:
+            - containerPort: 3000
+              name: http
+
+          env:
+            # Runtime value for SSR (server-side fetch calls).
+            # The browser bundle still uses the build-arg value.
+            - name: NEXT_PUBLIC_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: expenseiq-config
+                  key: NEXT_PUBLIC_API_URL
+
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 30     # next build takes time on first start
+            periodSeconds: 10
+            failureThreshold: 6
+
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 3

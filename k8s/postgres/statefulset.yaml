@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: expenseiq-postgres
+  namespace: expenseiq
+  labels:
+    app: expenseiq-postgres
+    app.kubernetes.io/part-of: expenseiq
+spec:
+  serviceName: expenseiq-postgres-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expenseiq-postgres
+  template:
+    metadata:
+      labels:
+        app: expenseiq-postgres
+    spec:
+      terminationGracePeriodSeconds: 60
+
+      containers:
+        - name: postgres
+          image: postgres:17-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+              name: postgres
+
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: expenseiq-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: expenseiq-secrets
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: expenseiq-secrets
+                  key: POSTGRES_DB
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+
+          volumeMounts:
+            # Persistent data
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
+
+            # Schema SQL — Postgres runs *.sql files in this dir
+            # automatically on FIRST initialisation (empty data dir only).
+            - name: schema-init
+              mountPath: /docker-entrypoint-initdb.d/schema.sql
+              subPath: schema.sql
+              readOnly: true
+
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 6
+
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+
+      volumes:
+        - name: schema-init
+          configMap:
+            name: expenseiq-config
+            items:
+              - key: schema.sql
+                path: schema.sql
+
+  # PVC created per-pod by the StatefulSet controller
+  volumeClaimTemplates:
+    - metadata:
+        name: pgdata
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
